@@ -74,7 +74,7 @@ userSchema.methods.toJSON = function () {
 // attaching instance method to generate auth token
 userSchema.methods.generateAuthToken = async function() {
     const user = this
-    const token = jwt.sign({ _id: user._id.toString() }, 'task-manager-secret')
+    const token = jwt.sign({ _id: user._id.toString() }, process.env.JWT_SECRET)
 
     // save the token in the database, it is an array so each device in which the user is loggedin has its own token
     user.tokens = user.tokens.concat({ token })

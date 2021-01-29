@@ -4,6 +4,7 @@ const User = require('../models/user')
 const auth = require('../middleware/auth')
 const multer = require('multer')
 const sharp = require('sharp')
+const { sendWelcome } = require('../emails/account')
 
 //get user profile
 router.get('/users/me', auth, (req, res) => {
