@@ -48,11 +48,6 @@ router.post('/tasks', auth,  (req, res) => {
       res.status(500).send()
     }
     
-    Task.find().then((tasks) => {
-      res.status(200).send(tasks)
-    }).catch(e => {
-      res.status(400).send(e)
-    })
   })
   
   //get a task by id
@@ -69,23 +64,6 @@ router.post('/tasks', auth,  (req, res) => {
     } catch (error) {
       res.status(500).send(error)
     }
-  })
-  
-  //remove a task by id and count incomplete tasks
-  router.delete('/tasks/:id', auth, (req, res) => {
-    const _id = req.params.id
-    Task.findOneAndDelete({_id, owner: req.user._id}).then((task) => {
-      if (!task) {
-        res.status(404).send()
-      }
-      console.log('tarea eliminada')
-      return Task.where({completed: false}).countDocuments()
-    }).then((count) => {
-      console.log('cuenta de tareas icompleta:', count)
-      res.status(200).send({'count':count})
-    }).catch(e => {
-      res.status(500).send(e)
-    })
   })
   
   // update a task
@@ -115,14 +93,14 @@ router.put('/tasks/:id', auth, async (req, res) => {
   })
   
   // delete a task
-  router.delete('/tasks/:id', async (req, res) => {
+  router.delete('/tasks/:id', auth, async (req, res) => {
     try {
   
-      const task = await Task.findByIdAndDelete(req.params.id)
+      const task = await Task.findOne({_id: req.params.id, owner: req.user._id})
       if (!task) {
-        res.status(404).send()
+        return res.status(404).send()
       }
-      return res.status(200).send(task)
+      res.status(200).send(task)
     } catch(e) {
       res.status(400).send(e)
     }
